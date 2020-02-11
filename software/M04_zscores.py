@@ -32,6 +32,9 @@ def run_metaxcan(args, context):
             break
         logging.log(9, "Processing gene %i:%s", i, gene)
         r, snps = AssociationCalculation.association(gene, context, return_snps=True)
+        if r is None:
+            logging.warn('No genotype information for gene {}'.format(gene))
+            continue
         results.append(r)
         snps_found.update(snps)
         reporter.update(len(snps_found), "%d %% of model's snps found so far in the gwas study")

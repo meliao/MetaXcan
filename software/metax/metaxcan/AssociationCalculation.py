@@ -56,6 +56,11 @@ def association(gene, context, return_snps=False):
     #capture context
     n_snps_in_model, i, cov, snps = context.provide_calculation(gene)
 
+    if cov is None and snps is None:
+        if return_snps:
+            return None, None
+        else:
+            return None
     if logging.getLogger().getEffectiveLevel() < 10:
         d_ = numpy.linalg.eig(cov)[0]
         if numpy.sum(numpy.less(d_,1e-6)):
