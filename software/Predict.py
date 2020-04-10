@@ -47,6 +47,9 @@ def dosage_generator(args, variant_mapping=None, weights=None):
     elif args.vcf_genotypes:
         from metax.genotype import CYVCF2Genotype
         d = CYVCF2Genotype.vcf_files_geno_lines(args.vcf_genotypes, mode=args.vcf_mode, variant_mapping=variant_mapping, whitelist=whitelist, skip_palindromic=args.skip_palindromic, liftover_conversion=liftover_conversion)
+    # elif args.parquet_genotypes:
+    #     from metax.genotype import ParquetGenotype
+    #     d = ParquetGenotype.parquet_files_geno_lines(args.parquet_genotypes, )
 
     if d is None:
         raise Exceptions.InvalidArguments("unsupported genotype input")
@@ -164,6 +167,8 @@ def run(args):
 
     logging.info("Preparing genotype dosages")
     dosage_source = dosage_generator(args, variant_mapping, weights)
+    print("DOSAGE SOURCE TYPE:")
+    print(type(dosage_source))
 
     logging.info("Processing genotypes")
     dcapture = []
@@ -172,6 +177,8 @@ def run(args):
     with prepare_prediction(args, extra, samples) as results:
 
         for i,e in enumerate(dosage_source):
+            print("DOSAGE OBJ TYPE")
+            print(type(e))
             if args.stop_at_variant and i>args.stop_at_variant:
                 break
             var_id = e[GF.RSID]
