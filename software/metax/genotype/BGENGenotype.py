@@ -35,6 +35,9 @@ def bgen_file_geno_lines(file, variant_mapping = None, force_colon = False, use_
             if chr == "NA" or pos == "NA":
                 continue
 
+        if whitelist and not varid in whitelist:
+            continue
+
         if variant_mapping:
             if dict_mapping:
                 if not varid in variant_mapping:
@@ -49,8 +52,7 @@ def bgen_file_geno_lines(file, variant_mapping = None, force_colon = False, use_
         # You should verify if you must match it
 
 
-        if whitelist and not varid in whitelist:
-            continue
+
 
         v = bgen["genotype"][variant.Index].compute()
         if v["phased"]:
