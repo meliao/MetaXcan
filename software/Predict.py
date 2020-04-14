@@ -164,21 +164,15 @@ def run(args):
     model, weights, extra = model_structure(args)
 
     variant_mapping = get_variant_mapping(args, weights)
-
     logging.info("Preparing genotype dosages")
     dosage_source = dosage_generator(args, variant_mapping, weights)
-    print("DOSAGE SOURCE TYPE:")
-    print(type(dosage_source))
 
     logging.info("Processing genotypes")
     dcapture = []
     reporter = Utilities.PercentReporter(logging.INFO, len(set(weights.rsid.values)))
     snps_found = set()
     with prepare_prediction(args, extra, samples) as results:
-
         for i,e in enumerate(dosage_source):
-            print("DOSAGE OBJ TYPE")
-            print(type(e))
             if args.stop_at_variant and i>args.stop_at_variant:
                 break
             var_id = e[GF.RSID]
