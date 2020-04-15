@@ -99,6 +99,8 @@ def load_samples(args):
 
     if s is None:
         raise Exceptions.InvalidArguments("Unsupported samples argument")
+    if args.n_batches is not None and args.batch is not None:
+        s = numpy.array_split(s, args.n_batches)[args.batch]
     return s
 
 def get_variant_mapping(args, weights):
@@ -253,6 +255,8 @@ def add_arguments(parser):
     parser.add_argument("--sub_batch", help="compute on a specific slice of data", type=int, default=None)
     parser.add_argument("--only_entries", help="Compute only these entries in the models (e.g. a whitelist of genes)", nargs="+")
     parser.add_argument("--capture")
+    parser.add_argument("--n_batches", type=int, help="Split individuals into this many batches.")
+    parser.add_argument("--batch", type=int, help="Which batch of individuals should be completed? 0-indexed.")
 
 if __name__ == "__main__":
     import argparse
