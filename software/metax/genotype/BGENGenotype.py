@@ -5,9 +5,11 @@ import logging
 
 from ..misc import Genomics
 
-def bgen_file_geno_lines(file, variant_mapping = None, force_colon = False, use_rsid=False, whitelist=None, skip_palindromic=False, liftover_conversion=None):
+def bgen_file_geno_lines(file, variant_mapping = None, force_colon = False,
+                         use_rsid=False, whitelist=None, skip_palindromic=False,
+                         liftover_conversion=None, sample_file=None):
     logging.log(9, "Processing bgen %s", file)
-    bgen = bgen_reader.read_bgen(file)
+    bgen = bgen_reader.read_bgen(file, samples_filepath=sample_file)
     variants = bgen["variants"]
     dict_mapping = variant_mapping is not None and type(variant_mapping) == dict
     for variant in variants.itertuples():
@@ -65,15 +67,24 @@ def bgen_file_geno_lines(file, variant_mapping = None, force_colon = False, use_
 
         yield (varid, chr, pos, allele_0, allele_1, numpy.mean(d)/2) + tuple(d)
 
-def bgen_files_geno_lines(files, variant_mapping = None, force_colon = False, use_rsid=False, whitelist=None, skip_palindromic=False, liftover_conversion=None):
+def bgen_files_geno_lines(files, variant_mapping = None, force_colon = False,
+                          use_rsid=False, whitelist=None,
+                          skip_palindromic=False, liftover_conversion=None,
+                          sample_file=None):
     logging.log(9, "Processing bgens")
     for file in files:
-        for l in bgen_file_geno_lines(file, variant_mapping=variant_mapping, force_colon=force_colon, use_rsid=use_rsid, whitelist=whitelist, skip_palindromic=skip_palindromic, liftover_conversion=liftover_conversion):
+        for l in bgen_file_geno_lines(file, variant_mapping=variant_mapping,
+                                      force_colon=force_colon,
+                                      use_rsid=use_rsid, whitelist=whitelist,
+                                      skip_palindromic=skip_palindromic,
+                                      liftover_conversion=liftover_conversion,
+                                      sample_file=sample_file):
             yield l
 
-def get_samples(path):
+def get_samples(path, sample_path):
     logging.info("Opening bgen to get samples")
-    bgen = bgen_reader.read_bgen(path, verbose=False)
+    bgen = bgen_reader.read_bgen(path, samples_filepath=sample_path,
+                                 verbose=False)
     samples = bgen["samples"].values
     samples = pandas.DataFrame({"FID":samples, "IID":samples})[["FID", "IID"]]
     return samples

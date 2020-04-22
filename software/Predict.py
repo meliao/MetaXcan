@@ -43,7 +43,12 @@ def dosage_generator(args, variant_mapping=None, weights=None):
     elif args.bgen_genotypes:
         from metax.genotype import BGENGenotype
         d = BGENGenotype.bgen_files_geno_lines(args.bgen_genotypes,
-            variant_mapping=variant_mapping, force_colon=args.force_colon, use_rsid=args.bgen_use_rsid, whitelist=whitelist, skip_palindromic=args.skip_palindromic)
+                                               variant_mapping=variant_mapping,
+                                               force_colon=args.force_colon,
+                                               use_rsid=args.bgen_use_rsid,
+                                               whitelist=whitelist,
+                                               skip_palindromic=args.skip_palindromic,
+                                               sample_file=args.bgen_sample)
     elif args.vcf_genotypes:
         from metax.genotype import CYVCF2Genotype
         d = CYVCF2Genotype.vcf_files_geno_lines(args.vcf_genotypes, mode=args.vcf_mode, variant_mapping=variant_mapping, whitelist=whitelist, skip_palindromic=args.skip_palindromic, liftover_conversion=liftover_conversion)
@@ -91,7 +96,7 @@ def load_samples(args):
         s = CYVCF2Genotype.get_samples(args.vcf_genotypes[0])
     elif args.bgen_genotypes:
         from metax.genotype import BGENGenotype
-        s = BGENGenotype.get_samples(args.bgen_genotypes[0])
+        s = BGENGenotype.get_samples(args.bgen_genotypes[0], args.bgen_sample)
     elif args.generate_sample_ids:
         s = ["ID_{}".format(x) for x in range(0, args.generate_sample_ids)]
         s = [(x, x) for x in s]
@@ -240,6 +245,7 @@ def add_arguments(parser):
     parser.add_argument("--stop_at_variant", help="convenience to do an early exit", type=int, default=None)
     parser.add_argument('--bgen_genotypes', nargs='+', help="genotypes (bgen format) to use")
     parser.add_argument('--bgen_use_rsid', action="store_true", help="use rsid if available")
+    parser.add_argument('--bgen_sample', help="Sample file if sample IDs are not written in the bgen")
     parser.add_argument("--vcf_genotypes", nargs='+', help="genotypes (vcf format) to use")
     parser.add_argument("--vcf_mode", help="genotyped or imputed")
     parser.add_argument('--force_colon', action="store_true", help ="will convert variant ids from 'chr:pos_a0_a1' to 'chr:pos:a0:a1'")
